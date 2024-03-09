@@ -1,0 +1,63 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.3'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'org.hibernate.orm' version '6.4.4.Final'
+	id 'org.graalvm.buildtools.native' version '0.9.28'
+}
+
+group = 'com.muyu'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	maven {
+		url 'https://maven.aliyun.com/repository/public/'
+	}
+	maven {
+		url 'https://maven.aliyun.com/repository/central'
+	}
+	maven {
+		url 'https://maven.aliyun.com/repository/gradle-plugin'
+	}
+	maven {
+		url 'https://maven.aliyun.com/repository/spring-plugin'
+	}
+	maven {
+		url 'https://maven.aliyun.com/repository/spring'
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+hibernate {
+	enhancement {
+		enableAssociationManagement = true
+	}
+}
+
