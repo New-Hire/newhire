@@ -1,0 +1,19 @@
+security:
+  jwt:
+    secret: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    expiration: 86400000 # 以毫秒为单位
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/hire?serverTimezone=UTC&useSSL=false
+    username: "dev"
+    password: "123456"
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+logging:
+  level:
+    web: info
+    root: info
+    sql: warn
