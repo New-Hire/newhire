@@ -1,5 +1,6 @@
 package com.muyu.newhire.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +11,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigInteger;
 import java.time.Instant;
 
 @Data
@@ -20,14 +20,14 @@ import java.time.Instant;
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotBlank
-    private String id;
+    private Long id;
 
     @NotBlank
     private String name;
 
+    @Nullable
     @Column(name = "logo_id")
-    private BigInteger logoId;
+    private Long logoId;
 
     @NotBlank
     private String desc;
@@ -43,9 +43,9 @@ public class Company {
     @NotBlank
     private String city;
 
-    @NotNull
+    @NotBlank
     @Column(name = "established_date")
-    private Instant establishedDate;
+    private String establishedDate;
 
     @NotNull
     @CreatedDate

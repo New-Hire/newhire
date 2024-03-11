@@ -1,12 +1,12 @@
 package com.muyu.newhire.controller;
 
+import com.muyu.newhire.auth.CurrentUser;
 import com.muyu.newhire.dto.AuthTokenDto;
 import com.muyu.newhire.pojo.AuthUser;
 import com.muyu.newhire.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +22,11 @@ public class AuthController {
     }
 
     @GetMapping(value = "/user")
-    public AuthUser getUser(@AuthenticationPrincipal UserDetails user) {
-        return new AuthUser(user.getUsername());
+    public AuthUser getUser(@AuthenticationPrincipal CurrentUser currentUser) {
+        return new AuthUser(
+                currentUser.getUserId(),
+                currentUser.getAccount()
+        );
     }
 
 }

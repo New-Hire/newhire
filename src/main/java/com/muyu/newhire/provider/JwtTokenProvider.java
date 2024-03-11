@@ -1,5 +1,6 @@
 package com.muyu.newhire.provider;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -29,9 +29,7 @@ public class JwtTokenProvider {
         return key;
     }
 
-    public String generateToken(String subject) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("sub", subject);
+    public String generateToken(String subject, Map<String, Object> claims) {
         Date expiredDate = new Date(new Date().getTime() + expirationTime);
         return Jwts.builder()
                 .claims(claims)
@@ -41,8 +39,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String verifyAndGetSubjectFromToken(String token) {
-        return Jwts.parser().verifyWith(this.getKey()).build().parseSignedClaims(token).getPayload().getSubject();
+    public Claims verifyAndGetSubjectFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(this.getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
 }

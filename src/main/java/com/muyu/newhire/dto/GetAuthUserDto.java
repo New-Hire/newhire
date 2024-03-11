@@ -6,6 +6,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class GetAuthUserDto {
+    private Long id;
     private String account;
     private String type;
 }

@@ -1,0 +1,101 @@
+package com.muyu.newhire.service;
+
+import com.muyu.newhire.dto.GetCompanyCandidateDto;
+import com.muyu.newhire.dto.GetRegisterCompanyDto;
+import com.muyu.newhire.model.Company;
+import com.muyu.newhire.model.CompanyCandidate;
+import com.muyu.newhire.model.User;
+import com.muyu.newhire.repository.CompanyCandidateRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class CompanyCandidateService {
+
+    private final CompanyCandidateRepository companyCandidateRepository;
+    private final CompanyService companyService;
+    private final UserService userService;
+
+    public void register(long userId, long companyId) throws Exception {
+        var companyExist = companyService.existById(companyId);
+        if (!companyExist) {
+            throw new Exception("企业不存在");
+        }
+        var exist = companyCandidateRepository.existsByCompanyIdAndUserId(companyId, userId);
+        if (exist) {
+            throw new Exception("记录已存在");
+        }
+        companyCandidateRepository.save(new CompanyCandidate(companyId, userId));
+    }
+
+    public List<GetRegisterCompanyDto> getUserRegisterCompanies(long userId) throws Exception {
+        var companyCandidates = companyCandidateRepository.findAllByUserId(userId);
+        if (companyCandidates.isEmpty()) {
+            return Collections.emptyList();
+        }
+        var companyIds = companyCandidates.stream().map(CompanyCandidate::getCompanyId).toList();
+        var companies = this.companyService.findAllByIds(companyIds);
+        Map<Long, Company> companyMap = companies.stream().collect(Collectors.toMap(Company::getId, v -> v));
+
+        List<GetRegisterCompanyDto> result = new ArrayList<>();
+        for (var companyCandidate : companyCandidates) {
+            var company = companyMap.get(companyCandidate.getCompanyId());
+            if (company == null) continue;
+            result.add(new GetRegisterCompanyDto(
+                    companyCandidate.getCompanyId(),
+                    company,
+                    companyCandidate.getStatus()
+            ));
+        }
+        return result;
+    }
+
+    public List<GetCompanyCandidateDto> getCompanyCandidates(long companyId) throws Exception {
+        var companyCandidates = companyCandidateRepository.findAllByCompanyId(companyId);
+        if (companyCandidates.isEmpty()) {
+            return Collections.emptyList();
+        }
+        var userIds = companyCandidates.stream().map(CompanyCandidate::getUserId).toList();
+        var users = this.userService.findAllByIds(userIds);
+        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, v -> v));
+
+        List<GetCompanyCandidateDto> result = new ArrayList<>();
+        for (var companyCandidate : companyCandidates) {
+            var user = userMap.get(companyCandidate.getUserId());
+            if (user == null) continue;
+            result.add(new GetCompanyCandidateDto(
+                    companyCandidate.getUserId(),
+                    companyCandidate.getCompanyId(),
+                    user,
+                    companyCandidate.getStatus()
+            ));
+        }
+        return result;
+    }
+
+    public CompanyCandidate findById(long id) throws Exception {
+        return companyCandidateRepository.findById(id).orElseThrow(() -> new Exception("记录不存在"));
+    }
+
+    public CompanyCandidate findByCompanyIdAndUserId(long companyId, long userId) throws Exception {
+        return companyCandidateRepository.findByCompanyIdAndUserId(companyId, userId).orElseThrow(() -> new Exception("记录不存在"));
+    }
+
+    private void checkStatus() {
+
+    }
+
+    public void invite(long companyId, long userId) throws Exception {
+        var companyCandidate = findByCompanyIdAndUserId(companyId, userId);
+        companyCandidate.setStatus(CompanyCandidate.CandidateStatus.INVITED);
+        companyCandidateRepository.save(companyCandidate);
+    }
+
+}
