@@ -34,4 +34,13 @@ public class UserController {
         return companyCandidateService.getUserRegisterCompanies(currentUser.getUserId());
     }
 
+    //  TODO：
+//    @Operation(summary = "请求他人帮忙推荐")
+//    @GetMapping(value = "/recommend_help", produces = MediaType.TEXT_PLAIN_VALUE)
+//    public String getCompanyJoinToken(
+//            @AuthenticationPrincipal CurrentUser currentUser
+//    ) throws Exception {
+//        return this.companyService.getCompanyJoinToken(companyId, currentUser.getUserId());
+//    }
+
 }

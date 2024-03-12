@@ -29,7 +29,7 @@ public class JwtTokenProvider {
         return key;
     }
 
-    public String generateToken(String subject, Map<String, Object> claims) {
+    public String generateToken(String subject, Map<String, Object> claims, long expirationTime) {
         Date expiredDate = new Date(new Date().getTime() + expirationTime);
         return Jwts.builder()
                 .claims(claims)
@@ -37,6 +37,10 @@ public class JwtTokenProvider {
                 .expiration(expiredDate)
                 .signWith(this.getKey(), Jwts.SIG.HS512)
                 .compact();
+    }
+
+    public String generateToken(String subject, Map<String, Object> claims) {
+        return generateToken(subject, claims, this.expirationTime);
     }
 
     public Claims verifyAndGetSubjectFromToken(String token) {
