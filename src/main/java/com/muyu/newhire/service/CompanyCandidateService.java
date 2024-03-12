@@ -5,9 +5,12 @@ import com.muyu.newhire.dto.GetRegisterCompanyDto;
 import com.muyu.newhire.model.Company;
 import com.muyu.newhire.model.CompanyCandidate;
 import com.muyu.newhire.model.User;
+import com.muyu.newhire.repository.CompanyCandidateLockRepository;
 import com.muyu.newhire.repository.CompanyCandidateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,8 +23,10 @@ import java.util.stream.Collectors;
 public class CompanyCandidateService {
 
     private final CompanyCandidateRepository companyCandidateRepository;
+    private final CompanyCandidateLockRepository companyCandidateLockRepository;
     private final CompanyService companyService;
     private final UserService userService;
+    private final JoinCompanyService joinCompanyService;
 
     public void register(long userId, long companyId) throws Exception {
         var companyExist = companyService.existById(companyId);
@@ -32,7 +37,7 @@ public class CompanyCandidateService {
         if (exist) {
             throw new Exception("记录已存在");
         }
-        companyCandidateRepository.save(new CompanyCandidate(companyId, userId));
+        create(companyId, userId);
     }
 
     public List<GetRegisterCompanyDto> getUserRegisterCompanies(long userId) throws Exception {
@@ -88,14 +93,48 @@ public class CompanyCandidateService {
         return companyCandidateRepository.findByCompanyIdAndUserId(companyId, userId).orElseThrow(() -> new Exception("记录不存在"));
     }
 
-    private void checkStatus() {
-
+    @Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Exception.class)
+    public CompanyCandidate findByCompanyIdAndUserIdForUpdate(long companyId, long userId) throws Exception {
+        return companyCandidateLockRepository.findByCompanyIdAndUserId(companyId, userId).orElseThrow(() -> new Exception("记录不存在"));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void invite(long companyId, long userId) throws Exception {
-        var companyCandidate = findByCompanyIdAndUserId(companyId, userId);
-        companyCandidate.setStatus(CompanyCandidate.CandidateStatus.INVITED);
-        companyCandidateRepository.save(companyCandidate);
+        var companyCandidate = findByCompanyIdAndUserIdForUpdate(companyId, userId);
+        if (companyCandidate.getStatus() != CompanyCandidate.CandidateStatus.INITIALIZED) {
+            throw new Exception("状态不合法");
+        }
+        updateStatus(companyCandidate, CompanyCandidate.CandidateStatus.INVITED);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void approve(long companyId, long userId) throws Exception {
+        var companyCandidate = findByCompanyIdAndUserIdForUpdate(companyId, userId);
+        if (companyCandidate.getStatus() != CompanyCandidate.CandidateStatus.INVITED) {
+            throw new Exception("状态不合法");
+        }
+        updateStatus(companyCandidate, CompanyCandidate.CandidateStatus.APPROVED);
+        joinCompanyService.join(companyId, userId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void refuse(long companyId, long userId) throws Exception {
+        var companyCandidate = findByCompanyIdAndUserIdForUpdate(companyId, userId);
+        if (companyCandidate.getStatus() == CompanyCandidate.CandidateStatus.APPROVED ||
+                companyCandidate.getStatus() == CompanyCandidate.CandidateStatus.REJECTED) {
+            throw new Exception("状态不合法");
+        }
+        updateStatus(companyCandidate, CompanyCandidate.CandidateStatus.REJECTED);
+    }
+
+    private CompanyCandidate create(long companyId, long userId) {
+        var companyCandidate = new CompanyCandidate(companyId, userId);
+        return companyCandidateRepository.save(companyCandidate);
+    }
+
+    private CompanyCandidate updateStatus(CompanyCandidate companyCandidate, CompanyCandidate.CandidateStatus status) {
+        companyCandidate.setStatus(status);
+        return companyCandidateRepository.save(companyCandidate);
     }
 
 }

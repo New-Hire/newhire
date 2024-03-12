@@ -28,4 +28,14 @@ public class UserService {
         return userRepository.findAllByIdIn(ids);
     }
 
+    private void updateCurrentCompany(User user, Long companyId) {
+        user.setCurrentCompanyId(companyId);
+        userRepository.save(user);
+    }
+
+    public void updateCurrentCompany(long id, Long companyId) {
+        User user = findById(id);
+        updateCurrentCompany(user, companyId);
+    }
+
 }

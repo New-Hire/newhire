@@ -48,4 +48,24 @@ public class CompanyCandidateController {
         companyCandidateService.invite(currentUser.getCurrentCompanyId(), userId);
     }
 
+    @Operation(summary = "[HR] 通过候选人")
+    @PreAuthorize(RoleAuthorizeConst.HR)
+    @PostMapping("/company/candidates/{userId}/approve")
+    public void approveCompanyCandidate(
+            @PathVariable long userId,
+            @AuthenticationPrincipal CurrentUser currentUser
+    ) throws Exception {
+        companyCandidateService.approve(currentUser.getCurrentCompanyId(), userId);
+    }
+
+    @Operation(summary = "[HR] 拒绝候选人")
+    @PreAuthorize(RoleAuthorizeConst.HR)
+    @PostMapping("/company/candidates/{userId}/refuse")
+    public void refuseCompanyCandidate(
+            @PathVariable long userId,
+            @AuthenticationPrincipal CurrentUser currentUser
+    ) throws Exception {
+        companyCandidateService.refuse(currentUser.getCurrentCompanyId(), userId);
+    }
+
 }
