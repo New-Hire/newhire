@@ -8,5 +8,5 @@ import lombok.Data;
 @Builder
 public class QueryUserDto {
     @Nullable
-    private Long companyId;
+    private Long currentCompanyId;
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class GetAuthUserDto {
     private Long id;
+    private String name;
     private String account;
     private String type;
 }

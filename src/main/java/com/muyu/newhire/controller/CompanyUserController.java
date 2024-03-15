@@ -31,7 +31,7 @@ public class CompanyUserController {
         var pageable = PageableUtil.of(pageNumber, pageSize);
         var query = QueryUserDto
                 .builder()
-                .companyId(currentUser.getCurrentCompanyId())
+                .currentCompanyId(currentUser.getCurrentCompanyId())
                 .build();
         var userPage = userService.findAll(query, pageable);
         return new PageData<>(userPage);
@@ -47,7 +47,7 @@ public class CompanyUserController {
                 currentUser.getUserId(),
                 currentUser.getCurrentCompanyId(),
                 userId,
-                rateUserDto.getLevel()
+                rateUserDto.getScore1()
         );
     }
 

@@ -1,5 +1,6 @@
 package com.muyu.newhire.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -55,7 +56,9 @@ public class CompanyCandidate {
         INVITED(1),
         APPROVED(2),
         REJECTED(3);
+        @JsonValue
         private final int value;
+
         CandidateStatus(int value) {
             this.value = value;
         }

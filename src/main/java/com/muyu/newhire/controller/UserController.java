@@ -33,7 +33,7 @@ public class UserController {
     @GetMapping()
     public GetAuthUserDto getUser(@AuthenticationPrincipal CurrentUser currentUser) throws Exception {
         var user = userService.findById(currentUser.getUserId());
-        return new GetAuthUserDto(user.getId(), user.getAccount(), user.getRole());
+        return new GetAuthUserDto(user.getId(), user.getName(), user.getAccount(), user.getRole());
     }
 
     @GetMapping("/register_companies")
@@ -66,7 +66,7 @@ public class UserController {
                 currentUser.getUserId(),
                 currentUser.getCurrentCompanyId(),
                 signedUserId,
-                rateUserDto.getLevel()
+                rateUserDto.getScore1()
         );
     }
 

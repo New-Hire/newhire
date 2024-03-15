@@ -21,7 +21,7 @@ public class CompanyCandidateController {
 
     private final CompanyCandidateService companyCandidateService;
 
-    @GetMapping("/companies/{companyId}/register")
+    @PostMapping("/companies/{companyId}/register")
     public void register(
             @PathVariable long companyId,
             @AuthenticationPrincipal CurrentUser currentUser

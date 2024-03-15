@@ -7,13 +7,13 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class UserSpecification {
 
-    public static Specification<User> byCompanyId(@Nullable Long companyId) {
+    public static Specification<User> byCurrentCompanyId(@Nullable Long currentCompanyId) {
         return (root, cq, cb) ->
-                companyId != null ? cb.equal(root.get("companyId"), companyId) : null;
+                currentCompanyId != null ? cb.equal(root.get("currentCompanyId"), currentCompanyId) : null;
     }
 
     public static Specification<User> byAll(QueryUserDto query) {
-        return byCompanyId(query.getCompanyId());
+        return byCurrentCompanyId(query.getCurrentCompanyId());
     }
 
 }

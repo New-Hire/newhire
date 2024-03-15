@@ -18,6 +18,8 @@ public class RateService {
             long userId,
             int level
     ) throws Exception {
+        // TODO: 不能评自己
+        // TODO: 不能重复评价同人
         var raterCompanies = userCompanyService.getUserCurrentAndBeforeCompany(raterId);
         var raterCompanyIds = raterCompanies.stream().map(UserCompany::getId).toList();
         var user = userService.findById(userId);
