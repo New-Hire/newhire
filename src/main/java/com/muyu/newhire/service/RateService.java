@@ -1,6 +1,7 @@
 package com.muyu.newhire.service;
 
 import com.muyu.newhire.model.UserCompany;
+import com.muyu.newhire.provider.RocketMqProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ public class RateService {
     private final UserRecommendService userRecommendService;
     private final UserCompanyService userCompanyService;
     private final UserService userService;
+    private final RocketMqProvider rocketMqProvider;
 
     public void rateUser(
             long raterId,
@@ -28,6 +30,8 @@ public class RateService {
             throw new Exception("被评者与中正官没有关系");
         }
         userRecommendService.create(raterId, raterCompanyId, userId, user.getCurrentCompanyId(), level);
+        // 不需要事务
+        rocketMqProvider.send(String.valueOf(userId));
     }
 
 }

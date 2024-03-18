@@ -1,5 +1,6 @@
 package com.muyu.newhire.service;
 
+import com.muyu.newhire.constant.RateCalcStatus;
 import com.muyu.newhire.dto.GetCompanyCandidateDto;
 import com.muyu.newhire.dto.GetRegisterCompanyDto;
 import com.muyu.newhire.model.Company;
@@ -79,7 +80,9 @@ public class CompanyCandidateService {
                     companyCandidate.getUserId(),
                     companyCandidate.getCompanyId(),
                     user,
-                    companyCandidate.getStatus()
+                    companyCandidate.getStatus(),
+                    RateCalcStatus.READY,
+                    0
             ));
         }
         return result;

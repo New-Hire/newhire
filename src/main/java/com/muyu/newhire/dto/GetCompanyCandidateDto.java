@@ -1,5 +1,6 @@
 package com.muyu.newhire.dto;
 
+import com.muyu.newhire.constant.RateCalcStatus;
 import com.muyu.newhire.model.CompanyCandidate;
 import com.muyu.newhire.model.User;
 import jakarta.validation.constraints.NotNull;
@@ -16,4 +17,7 @@ public class GetCompanyCandidateDto {
     @NotNull
     private User user;
     private CompanyCandidate.CandidateStatus status;
+    @NotNull
+    private RateCalcStatus rateCalcStatus;
+    private Integer level;
 }
