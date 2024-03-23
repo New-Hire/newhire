@@ -8,6 +8,7 @@ import com.muyu.newhire.service.RecommendSignService;
 import com.muyu.newhire.util.PageableUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +28,7 @@ public class CompanyController {
             @RequestParam int pageNumber,
             @RequestParam int pageSize,
             @AuthenticationPrincipal CurrentUser currentUser
-    ) throws Exception {
+    ) {
         var pageable = PageableUtil.of(pageNumber, pageSize);
         var companyPage = companyService.findAll(pageable);
         return new PageData<>(companyPage);

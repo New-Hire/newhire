@@ -19,5 +19,5 @@ public class GetCompanyCandidateDto {
     private CompanyCandidate.CandidateStatus status;
     @NotNull
     private RateCalcStatus rateCalcStatus;
-    private Integer level;
+    private Integer score;
 }

@@ -16,6 +16,12 @@ public class PageableUtil {
         if (pageNumber <= 0) {
             throw new IllegalArgumentException("pageNumber must be a positive integer.");
         }
+        if (pageSize > 30) {
+            throw new IllegalArgumentException("pageSize too large.");
+        }
+        if (pageNumber > 1000) {
+            throw new IllegalArgumentException("pageNumber too large.");
+        }
         return PageRequest.of(pageNumber - 1, pageSize, sort);
     }
 

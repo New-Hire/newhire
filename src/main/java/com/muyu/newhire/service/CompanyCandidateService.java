@@ -6,6 +6,7 @@ import com.muyu.newhire.dto.GetRegisterCompanyDto;
 import com.muyu.newhire.model.Company;
 import com.muyu.newhire.model.CompanyCandidate;
 import com.muyu.newhire.model.User;
+import com.muyu.newhire.model.UserScore;
 import com.muyu.newhire.repository.CompanyCandidateLockRepository;
 import com.muyu.newhire.repository.CompanyCandidateRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class CompanyCandidateService {
     private final CompanyService companyService;
     private final UserService userService;
     private final JoinCompanyService joinCompanyService;
+    private final UserScoreService userScoreService;
 
     public void register(long userId, long companyId) throws Exception {
         var companyExist = companyService.existById(companyId);
@@ -68,21 +70,29 @@ public class CompanyCandidateService {
         if (companyCandidates.isEmpty()) {
             return Collections.emptyList();
         }
+
         var userIds = companyCandidates.stream().map(CompanyCandidate::getUserId).toList();
+
+        // 充填User数据
         var users = this.userService.findAllByIds(userIds);
         Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, v -> v));
+        // 充填User评分
+        var userScores = userScoreService.findAllByUserIds(userIds);
+        Map<Long, Integer> userScoreMap = userScores.stream().collect(Collectors.toMap(UserScore::getUserId, UserScore::getScore));
 
         List<GetCompanyCandidateDto> result = new ArrayList<>();
         for (var companyCandidate : companyCandidates) {
             var user = userMap.get(companyCandidate.getUserId());
             if (user == null) continue;
+            var score = userScoreMap.get(companyCandidate.getUserId());
+
             result.add(new GetCompanyCandidateDto(
                     companyCandidate.getUserId(),
                     companyCandidate.getCompanyId(),
                     user,
                     companyCandidate.getStatus(),
                     RateCalcStatus.READY,
-                    0
+                    score != null ? score : 0
             ));
         }
         return result;
